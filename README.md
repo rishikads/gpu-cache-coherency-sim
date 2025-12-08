@@ -8,9 +8,9 @@ CUDA microbenchmarks are included for real-hardware comparison.
 
 ---
 
-## Baseline Simulation
+## Baseline Simulation (W1)
 
-The default configuration is:
+The default configuration corresponds to:
 
 - LRU replacement  
 - Inclusive hierarchy  
@@ -29,7 +29,7 @@ make
 Save output:
 
 ```bash
-./sim workloads/seq_workload.txt > results/run_lru_inclusive.txt
+./sim workloads/seq_workload.txt > results/run_W1_lru_inclusive_ws32.txt
 ```
 
 View results in ASCII chart format:
@@ -82,8 +82,49 @@ warp_size = 64;    // default is 32
 Rebuild and run:
 
 ```bash
+make clean
 make
 ./sim workloads/seq_workload.txt > results/run_<config>.txt
 ```
+
+---
+
+## Saving Results for Each Configuration (W1–W8)
+
+Use the following naming convention when saving each experiment:
+
+```
+run_W<id>_<replacement>_<hierarchy>_ws<warp_size>.txt
+```
+
+Examples:
+
+```bash
+# W1: LRU, Inclusive, Warp Size 32 (baseline)
+./sim workloads/seq_workload.txt > results/run_W1_lru_inclusive_ws32.txt
+
+# W2: LRU, Inclusive, Warp Size 64
+./sim workloads/seq_workload.txt > results/run_W2_lru_inclusive_ws64.txt
+
+# W3: FIFO, Inclusive, Warp Size 32
+./sim workloads/seq_workload.txt > results/run_W3_fifo_inclusive_ws32.txt
+
+# W4: FIFO, Inclusive, Warp Size 64
+./sim workloads/seq_workload.txt > results/run_W4_fifo_inclusive_ws64.txt
+
+# W5: LRU, Exclusive, Warp Size 32
+./sim workloads/seq_workload.txt > results/run_W5_lru_exclusive_ws32.txt
+
+# W6: LRU, Exclusive, Warp Size 64
+./sim workloads/seq_workload.txt > results/run_W6_lru_exclusive_ws64.txt
+
+# W7: FIFO, Exclusive, Warp Size 32
+./sim workloads/seq_workload.txt > results/run_W7_fifo_exclusive_ws32.txt
+
+# W8: FIFO, Exclusive, Warp Size 64
+./sim workloads/seq_workload.txt > results/run_W8_fifo_exclusive_ws64.txt
+```
+
+The analysis script automatically detects all `.txt` files inside the `results/` directory and compares IPC, cycles, L1/L2 hit rates, and memory behavior across configurations.
 
 ---
