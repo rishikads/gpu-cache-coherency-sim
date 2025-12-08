@@ -21,6 +21,7 @@ The default configuration is:
 Run:
 
 ```bash
+make clean
 make
 ./sim workloads/seq_workload.txt
 ```
