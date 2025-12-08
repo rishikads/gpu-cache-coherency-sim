@@ -1,0 +1,7 @@
+Total cycles: 35497
+Total instructions: 8000
+IPC: 0.225371
+L1 hits: 7622, L1 misses: 378
+L2 hits: 61, L2 misses: 317
+DRAM accesses: 317
+Coherence invalidations: 0

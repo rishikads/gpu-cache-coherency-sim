@@ -1,0 +1,6 @@
+# Simple sequential streaming on two cores
+CORE 0 WARP 0 SEQ 0       2000 4
+CORE 0 WARP 1 SEQ 4096    2000 4
+
+CORE 1 WARP 0 SEQ 8192    2000 4
+CORE 1 WARP 1 SEQ 12288   2000 4
