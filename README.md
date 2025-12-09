@@ -12,35 +12,43 @@ CUDA microbenchmarks are included for real-hardware comparison.
 
 The default configuration corresponds to:
 
-- LRU replacement  
-- Inclusive hierarchy  
-- Warp size = 32  
-- Two cores  
-- Sequential synthetic workload  
+| Component   | Value                 |
+| ----------- | --------------------- |
+| L1 size     | 32KB                  |
+| L1 assoc    | 4-way                 |
+| L2 size     | 512KB                 |
+| L2 assoc    | 8-way                 |
+| Replacement | LRU                   |
+| L2 policy   | Inclusive             |
+| Latencies   | L1=4, L2=20, DRAM=200 | 
 
 Run:
 
 ```bash
 make clean
 make
-./sim workloads/seq_workload.txt
 ```
 
 Save output:
-
+Using reuse workload and sequential workload.
 ```bash
-./sim workloads/seq_workload.txt > results/run_W1_lru_inclusive_ws32.txt
+./sim workloads/reuse_workload.txt > results/run_W1_reuse.txt
+./sim workloads/seq_workload.txt > results/run_W1_seq.txt
 ```
 
 View results in ASCII chart format:
-
+(Requires your working Python environment to be activated)
 ```bash
-python3 plot_results_cli.py
+source ~/miniconda/bin/activate
+conda activate gpu
+
+python plot_results_cli.py
+mv results/plot.png results/plot_W1.png
 ```
 
 ---
 
-## CUDA Microbenchmarks (Hardware Validation)
+## CUDA Microbenchmarks (Hardware Validation)(W0)
 
 These benchmarks measure real GPU latency trends for comparison with the simulator.
 
@@ -58,72 +66,33 @@ cd ..
 
 ## Modifying Architecture Settings
 
-All architectural knobs are in `config.h`.
+All architectural knobs are in `main.cpp`.
 
 ### Change Replacement Policy
 
 ```cpp
-l1_config.replacement_policy = "FIFO";
-l2_config.replacement_policy = "FIFO";
+cfg.l1_config.replacement_policy = "LRU";
+cfg.l2_config.replacement_policy = "LRU";
+
+cfg.l1_config.replacement_policy = "FIFO";
+cfg.l2_config.replacement_policy = "FIFO";
+
 ```
 
-### Toggle Inclusive / Exclusive L2
+### Toggle Inclusive
 
 ```cpp
-l2_config.inclusive = false;    // false means exclusive mode
+cfg.l2_config.inclusive = true;
+cfg.l2_config.inclusive = false;
 ```
 
 ### Change Warp Size
 
 ```cpp
-warp_size = 64;    // default is 32
+cfg.warp_size = 64;    // default is 32
 ```
 
-Rebuild and run:
-
-```bash
-make clean
-make
-./sim workloads/seq_workload.txt > results/run_<config>.txt
-```
-
----
-
-## Saving Results for Each Configuration (W1–W8)
-
-Use the following naming convention when saving each experiment:
-
-```
-run_W<id>_<replacement>_<hierarchy>_ws<warp_size>.txt
-```
-
-Examples:
-
-```bash
-# W1: LRU, Inclusive, Warp Size 32 (baseline)
-./sim workloads/seq_workload.txt > results/run_W1_lru_inclusive_ws32.txt
-
-# W2: LRU, Inclusive, Warp Size 64
-./sim workloads/seq_workload.txt > results/run_W2_lru_inclusive_ws64.txt
-
-# W3: FIFO, Inclusive, Warp Size 32
-./sim workloads/seq_workload.txt > results/run_W3_fifo_inclusive_ws32.txt
-
-# W4: FIFO, Inclusive, Warp Size 64
-./sim workloads/seq_workload.txt > results/run_W4_fifo_inclusive_ws64.txt
-
-# W5: LRU, Exclusive, Warp Size 32
-./sim workloads/seq_workload.txt > results/run_W5_lru_exclusive_ws32.txt
-
-# W6: LRU, Exclusive, Warp Size 64
-./sim workloads/seq_workload.txt > results/run_W6_lru_exclusive_ws64.txt
-
-# W7: FIFO, Exclusive, Warp Size 32
-./sim workloads/seq_workload.txt > results/run_W7_fifo_exclusive_ws32.txt
-
-# W8: FIFO, Exclusive, Warp Size 64
-./sim workloads/seq_workload.txt > results/run_W8_fifo_exclusive_ws64.txt
-```
+Rebuild and run
 
 The analysis script automatically detects all `.txt` files inside the `results/` directory and compares IPC, cycles, L1/L2 hit rates, and memory behavior across configurations.
 
